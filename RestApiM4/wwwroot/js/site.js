@@ -1,7 +1,37 @@
-﻿function getItems() {
-    fetch("api/TodoItems")
+﻿const uri = "api/TodoItems";
+
+function getItems() {
+    fetch(uri)
         .then(reponse => reponse.json())
         .then(data => displayTodoItems(data))
+        .catch(error => console.error(error))
+}
+
+function createItem() {
+    const name = document.getElementById("name-todo");
+    const isComplete = document.getElementById("is_complete-todo");
+
+    const item = {
+        name: name,
+        isComplete: isComplete
+    };
+
+    fetch(uri, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(item)
+    })
+        .then(response => {
+            if (!response.ok) {
+                console.error(response.statusText);
+                return;
+            }
+
+            document.location = "/index.html";
+        })
         .catch(error => console.error(error))
 }
 
