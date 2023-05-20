@@ -10,6 +10,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseInMemo
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddMvc();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -39,13 +40,33 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseDefaultFiles();
 
-app.UseHttpsRedirection();
+// app.UseRouting();
+
+app.MapGet("/index", async context =>
+{
+    var mainPage = await File.ReadAllTextAsync("wwwroot/index.html");
+    await context.Response.WriteAsync(mainPage);
+});
+
+app.MapGet("/create", async context =>
+{
+    var mainPage = await File.ReadAllTextAsync("wwwroot/create.html");
+    await context.Response.WriteAsync(mainPage);
+});
+
+app.MapRazorPages();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
 
 app.Run();

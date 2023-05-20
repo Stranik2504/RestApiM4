@@ -12,8 +12,8 @@ function createItem() {
     const isComplete = document.getElementById("is_complete-todo");
 
     const item = {
-        name: name,
-        isComplete: isComplete
+        name: name.value,
+        isComplete: isComplete.checked
     };
 
     fetch(uri, {
@@ -24,15 +24,18 @@ function createItem() {
         },
         body: JSON.stringify(item)
     })
-        .then(response => {
-            if (!response.ok) {
-                console.error(response.statusText);
-                return;
-            }
-
+        .then(() => {
             document.location = "/index.html";
         })
         .catch(error => console.error(error))
+}
+
+function deleteItem(id) {
+    fetch(`${uri}/${id}`, {
+        method: 'DELETE'
+    })
+        .then(() => getItems())
+        .catch(error => console.error(error));
 }
 
 function displayTodoItems(data) {
@@ -51,6 +54,17 @@ function displayTodoItems(data) {
         checkBox.type = 'checkbox';
         checkBox.disabled = true;
         checkBox.checked = item.isComplete;
-        tr.insertCell(1).appendChild(checkBox);
+        checkBox.setAttribute('class', 'form-check-input text');
+        let div = document.createElement('div');
+        div.setAttribute('class', 'text-center');
+        div.appendChild(checkBox)
+        tr.insertCell(1).appendChild(div);
+
+        // Delete button
+        let deleteButton = document.createElement('button');
+        deleteButton.innerText = '╳';
+        deleteButton.setAttribute('class', 'btn btn-danger');
+        deleteButton.setAttribute('onclick', `deleteItem(${item.id})`);
+        tr.insertCell(2).appendChild(deleteButton);
     });
 }
